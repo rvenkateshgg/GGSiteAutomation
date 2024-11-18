@@ -41,6 +41,7 @@ class TestBrokenLink:
         print(f"Checking: {input_url}")
         checkedUrls.append(input_url)
         self.driver.get(input_url)
+
         All_links = self.driver.find_elements(By.TAG_NAME, "a")
         print(f"Total num of links in {input_url} : {len(All_links)}")
         urls = set(link.get_attribute("href") for link in All_links if link.get_attribute("href"))
@@ -48,5 +49,4 @@ class TestBrokenLink:
         for url in urls.copy():
             if url.startswith("https://shop.greatergoods.com/") and url not in checkedUrls:
                 brokenUrls.append(self.__test_broken_link(self, url, checkedUrls, brokenUrls))
-            # else:
-            #     print(f"Skipping invalid URL: {url}")
+
