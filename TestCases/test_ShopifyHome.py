@@ -46,10 +46,9 @@ class TestBrokenLink:
                 self.driver.get(url)
                 try:
                     response = requests.get(url)
-                    if response.status_code == 200:
+                    if response.status_code >= 400:
                         print(f"Broken link: {url} status code: {response.status_code}")
                         results.append(f"Broken link: {url}, status code: {response.status_code}")
-                        break
                 except requests.RequestException as e:
                     print(f"Error accessing {url}: {e}")
             else:
