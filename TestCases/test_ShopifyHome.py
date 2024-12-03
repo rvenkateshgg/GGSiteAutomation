@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from Configuration.Slack_api import SLACKAPI
+from Utilities.slackUtils import send_file_to_slack
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from selenium.common import exceptions
@@ -46,9 +47,10 @@ class TestBrokenLink:
                 self.driver.get(url)
                 try:
                     response = requests.get(url)
-                    if response.status_code >= 400:
+                    if response.status_code == 200:
                         print(f"Broken link: {url} status code: {response.status_code}")
                         results.append(f"Broken link: {url}, status code: {response.status_code}")
+                        break
                 except requests.RequestException as e:
                     print(f"Error accessing {url}: {e}")
             else:
@@ -56,7 +58,6 @@ class TestBrokenLink:
         if results:
             df = pd.DataFrame(results)
             df.to_csv(path, index=False)
-            self.slack = SLACKAPI()
-            self.slack.send_file_to_slack(path)
+            send_file_to_slack(path)
         else:
             print("No Broken links present")
