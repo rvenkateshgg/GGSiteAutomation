@@ -11,10 +11,10 @@ from dateutil.relativedelta import relativedelta
 from selenium.common import exceptions
 import time
 
-s = Service(executable_path="../drivers/chromedriver")
-site = "https://shop.greatergoods.com/"
-base_url = "https://shop."
-path = '../Reports/brokenlinks14.csv'
+s = Service(executable_path="../../drivers/chromedriver")
+site = "https://greatergoods.com/"
+base_url = "https://"
+path = '../Reports/brokenlinks2.csv'
 
 
 def pytest_addOption(parser):
@@ -49,15 +49,14 @@ class TestBrokenLink:
                     response = requests.get(url)
                     if response.status_code == 200:
                         print(f"Broken link: {url} status code: {response.status_code}")
-                        results.append(f"Broken link: {url}, status code: {response.status_code}")
-                        break
+                        results.append((url, response.status_code))
+                        if results:
+                            df = pd.DataFrame(results, columns=['Broken Link', 'Status code'])
+                            df.to_csv(path, index=False)
+                            send_file_to_slack(path)
+                        else:
+                            print("No Broken links found")
                 except requests.RequestException as e:
                     print(f"Error accessing {url}: {e}")
             else:
                 print(f"Skipping invalid URL: {url}")
-        if results:
-            df = pd.DataFrame(results)
-            df.to_csv(path, index=False)
-            send_file_to_slack(path)
-        else:
-            print("No Broken links present")

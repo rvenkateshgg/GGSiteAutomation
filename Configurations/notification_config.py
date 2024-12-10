@@ -1,0 +1,4 @@
+
+class NotificationConfig:
+    SLACK_TOKEN = "xoxb-35910659621-8143511060802-B56eVu6Q0exAMCOIdDR4hnos"
+    SLACK_CHANNEL_ID = "C02N2HG0E1W"
