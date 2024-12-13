@@ -2,7 +2,7 @@ import time
 
 from Configurations.config import AppConfig
 from Pages.gg_shopify.broken_link import GGShopifyBrokenLink
-from TestCases.shared.driver_setup import webdriver_instance
+from TestCases.shared.conftest import webdriver_instance
 
 
 class TestBrokenLink:

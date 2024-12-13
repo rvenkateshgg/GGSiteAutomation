@@ -7,7 +7,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
 
-def get_webdriver(browser="chrome", headless=False):
+def get_webdriver(browser="firefox", headless=False):
     """
     Initializes and returns a WebDriver instance.
 

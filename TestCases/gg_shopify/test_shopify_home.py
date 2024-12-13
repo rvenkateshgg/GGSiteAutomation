@@ -4,17 +4,19 @@ import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
-from Configuration.Slack_api import SLACKAPI
-from Utilities.slackUtils import send_file_to_slack
+from Utilities.report_utilities import get_report
+import requests
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin, urlparse
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from selenium.common import exceptions
 import time
 
 s = Service(executable_path="../../drivers/chromedriver")
-site = "https://greatergoods.com/"
-base_url = "https://"
-path = '../Reports/brokenlinks2.csv'
+site = "https://shop.greatergoods.com/collections/the-new-the-exciting-the-good/products/cold-press-juicer-1"
+base_url = "https://shop.greatergoods.com"
+path = '../Reports/brokenlink2.csv'
 
 
 def pytest_addOption(parser):
@@ -28,7 +30,7 @@ class TestBrokenLink:
     def setup(self, request):
         options = webdriver.ChromeOptions()
         options.add_argument("--headless")
-        self.driver = webdriver.Chrome(service=s, options=options)
+        self.driver = webdriver.Chrome(service=s)
         self.driver.maximize_window()
         self.driver.implicitly_wait(10)
         yield
@@ -43,20 +45,17 @@ class TestBrokenLink:
         print(f"Total num of links: {len(All_links)}")
         urls = set(link.get_attribute("href") for link in All_links if link.get_attribute("href"))
         for url in urls:
-            if url.startswith(base_url):
-                self.driver.get(url)
-                try:
-                    response = requests.get(url)
-                    if response.status_code == 200:
-                        print(f"Broken link: {url} status code: {response.status_code}")
-                        results.append((url, response.status_code))
-                        if results:
-                            df = pd.DataFrame(results, columns=['Broken Link', 'Status code'])
-                            df.to_csv(path, index=False)
-                            send_file_to_slack(path)
-                        else:
-                            print("No Broken links found")
-                except requests.RequestException as e:
-                    print(f"Error accessing {url}: {e}")
-            else:
-                print(f"Skipping invalid URL: {url}")
+            print(url)
+            try:
+                response = requests.get(url)
+                if response.status_code >= 400:
+                    print(f"Broken link: {url} status code: {response.status_code}")
+                    results.append((url, response.status_code))
+                    if results:
+                        df = pd.DataFrame(results, columns=['Broken Link', 'Status code'])
+                        df.to_csv(path, index=False)
+                    else:
+                        print("No Broken links found")
+            except requests.RequestException as e:
+                print(f"Error accessing {url}: {e}")
+

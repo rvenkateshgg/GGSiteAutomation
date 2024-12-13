@@ -3,7 +3,7 @@ import requests
 from selenium.common import StaleElementReferenceException
 from selenium.webdriver.common.by import By
 
-from Utilities.slackUtils import send_file_to_slack
+visited_links = set()
 
 
 class GGShopifyBrokenLink:
